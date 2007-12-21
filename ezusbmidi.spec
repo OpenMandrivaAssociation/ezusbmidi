@@ -11,6 +11,7 @@ Patch0:		%{name}-%{version}-udev.patch.bz2
 License: 	GPL
 URL: 		http://linux-hotplug.sourceforge.net
 Group: 		System/Kernel and hardware
+BuildRoot: 	%{_tmppath}/%{name}-buildroot
 BuildArch: 	noarch
 Requires: 	fxload udev
 BuildRequires: 	linuxdoc-tools sdcc
