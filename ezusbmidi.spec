@@ -1,14 +1,14 @@
 %define name 	ezusbmidi
 %define version 2002_10_20
-%define release %mkrel 5
+%define release %mkrel 6
 
 Summary: 	Firmware drivers for EZUSB MIDI devices
 Name: 		%{name}
 Version: 	%{version}
 Release: 	%{release}
 Source: 	%{name}-%{version}.tar.bz2
-Patch0:		%{name}-%{version}-udev.patch.bz2
-License: 	GPL
+Patch0:		%{name}-%{version}-udev.patch
+License: 	GPLv2
 URL: 		http://linux-hotplug.sourceforge.net
 Group: 		System/Kernel and hardware
 BuildRoot: 	%{_tmppath}/%{name}-buildroot
@@ -43,6 +43,6 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(-,root,root)
 %doc AUTHORS COPYING ChangeLog descriptor.png KnownBugs README *.html
-%config(noreplace) %_sysconfdir/udev/rules.d
-%_datadir/usb/ezusbmidi
+%{_sysconfdir}/udev/rules.d/*
+%{_datadir}/usb/ezusbmidi
 
