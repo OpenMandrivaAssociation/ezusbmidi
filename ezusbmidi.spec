@@ -1,6 +1,6 @@
 %define name 	ezusbmidi
 %define version 2002_10_20
-%define release %mkrel 9
+%define release %mkrel 10
 
 Summary: 	Firmware drivers for EZUSB MIDI devices
 Name: 		%{name}
