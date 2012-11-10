@@ -1,0 +1,178 @@
+diff -ruN ezusbmidi-2002_10_20-orig/70-ezusbmidi-firmware.rules ezusbmidi-2002_10_20/70-ezusbmidi-firmware.rules
+--- ezusbmidi-2002_10_20-orig/70-ezusbmidi-firmware.rules	1970-01-01 01:00:00.000000000 +0100
++++ ezusbmidi-2002_10_20/70-ezusbmidi-firmware.rules	2006-03-19 01:00:00.000000000 +0100
+@@ -0,0 +1,9 @@
++# ezusbmidi-firmware.rules - udev rules for loading firmware into MidiSport devices
++
++# DEVPATH=="/*.0" selects interface 0 only
++# (some udev versions don't work with SYSFS{bInterfaceNumber})
++
++# MidiSport 2x2
++ACTION=="add", SUBSYSTEM=="usb", DEVPATH=="/*.0", ENV{PRODUCT}=="763/1001/*", RUN+="/sbin/fxload -I /usr/share/usb/ezusbmidi/ezusbmidi2x2.ihx"
++# MidiSport 1x1
++ACTION=="add", SUBSYSTEM=="usb", DEVPATH=="/*.0", ENV{PRODUCT}=="763/1010/*", RUN+="/sbin/fxload -I /usr/share/usb/ezusbmidi/ezusbmidi1x1.ihx"
+diff -ruN ezusbmidi-2002_10_20-orig/ezusbmidi.c ezusbmidi-2002_10_20/ezusbmidi.c
+--- ezusbmidi-2002_10_20-orig/ezusbmidi.c	2002-10-20 00:00:00.000000000 +0200
++++ ezusbmidi-2002_10_20/ezusbmidi.c	2006-03-19 01:08:00.000000000 +0100
+@@ -64,7 +64,7 @@
+ struct MidiPipeLine
+ {
+   struct CYCSYN  inserCtl;        // UART->serial
+-  byte*  xdata   inserBuf;
++  byte*          inserBuf;
+ };
+ 
+ // UART (0) -> EP 1 pipeline
+diff -ruN ezusbmidi-2002_10_20-orig/Hotplug/CVS/Entries ezusbmidi-2002_10_20/Hotplug/CVS/Entries
+--- ezusbmidi-2002_10_20-orig/Hotplug/CVS/Entries	2002-10-20 00:00:00.000000000 +0200
++++ ezusbmidi-2002_10_20/Hotplug/CVS/Entries	1970-01-01 01:00:00.000000000 +0100
+@@ -1,4 +0,0 @@
+-/Hotplugging/1.2/Sun Oct 20 15:18:11 2002//
+-/ezusbmidi/1.1/Sun Oct 20 14:48:54 2002//
+-/usb.usermap.local/1.2/Sun Oct 20 15:18:11 2002//
+-D
+diff -ruN ezusbmidi-2002_10_20-orig/Hotplug/CVS/Repository ezusbmidi-2002_10_20/Hotplug/CVS/Repository
+--- ezusbmidi-2002_10_20-orig/Hotplug/CVS/Repository	2002-10-20 00:00:00.000000000 +0200
++++ ezusbmidi-2002_10_20/Hotplug/CVS/Repository	1970-01-01 01:00:00.000000000 +0100
+@@ -1 +0,0 @@
+-firmware/ezusb/midi/original/Hotplug
+diff -ruN ezusbmidi-2002_10_20-orig/Hotplug/CVS/Root ezusbmidi-2002_10_20/Hotplug/CVS/Root
+--- ezusbmidi-2002_10_20-orig/Hotplug/CVS/Root	2002-10-20 00:00:00.000000000 +0200
++++ ezusbmidi-2002_10_20/Hotplug/CVS/Root	1970-01-01 01:00:00.000000000 +0100
+@@ -1 +0,0 @@
+-:pserver:anonymous@cvs.linux-hotplug.sourceforge.net:/cvsroot/linux-hotplug
+diff -ruN ezusbmidi-2002_10_20-orig/Hotplug/ezusbmidi ezusbmidi-2002_10_20/Hotplug/ezusbmidi
+--- ezusbmidi-2002_10_20-orig/Hotplug/ezusbmidi	2002-07-01 00:00:00.000000000 +0200
++++ ezusbmidi-2002_10_20/Hotplug/ezusbmidi	1970-01-01 01:00:00.000000000 +0100
+@@ -1,49 +0,0 @@
+-#!/bin/sh
+-
+-FIRMWARE=
+-FLAGS=
+-LOADER=/sbin/fxload
+-
+-# pre-renumeration device IDs
+-case $PRODUCT in
+-
+-# Midisport 1x1
+-763/1010/*)
+-    FIRMWARE=/usr/share/usb/ezusbmidi/ezusbmidi1x1.ihx
+-    ;;
+-
+-# Midisport 2x2
+-763/1001/*)
+-    FIRMWARE=/usr/share/usb/ezusbmidi/ezusbmidi2x2.ihx
+-    ;;
+-
+-esac
+-
+-# quit unless we were called to download some firmware
+-if [ "$FIRMWARE" = "" ]; then
+-    if [ -x /usr/bin/logger ]; then
+-	/usr/bin/logger -t $0 "there is not a firmware for $PRODUCT ??"
+-    fi
+-    exit 1
+-fi
+-
+-# missing firmware?
+-if [ ! -r $FIRMWARE ]; then
+-    if [ -x /usr/bin/logger ]; then
+-	/usr/bin/logger -t $0 "missing $FIRMWARE for $PRODUCT ??"
+-    fi
+-    exit 1
+-fi
+-
+-# missing loader?
+-if [ ! -x $LOADER ]; then
+-    if [ -x /usr/bin/logger ]; then
+-	/usr/bin/logger -t $0 "missing $LOADER ??"
+-    fi
+-    exit 1
+-fi
+-
+-if [ -x /usr/bin/logger ]; then
+-    /usr/bin/logger -t $0 "load $FIRMWARE for $PRODUCT to $DEVICE"
+-fi
+-$LOADER $FLAGS -I $FIRMWARE
+diff -ruN ezusbmidi-2002_10_20-orig/Hotplug/ezusbmidi.usermap ezusbmidi-2002_10_20/Hotplug/ezusbmidi.usermap
+--- ezusbmidi-2002_10_20-orig/Hotplug/ezusbmidi.usermap	2002-10-20 00:00:00.000000000 +0200
++++ ezusbmidi-2002_10_20/Hotplug/ezusbmidi.usermap	1970-01-01 01:00:00.000000000 +0100
+@@ -1,5 +0,0 @@
+-# usb module         match_flags idVendor idProduct bcdDevice_lo bcdDevice_hi bDeviceClass bDeviceSubClass bDeviceProtocol bInterfaceClass bInterfaceSubClass bInterfaceProtocol driver_info
+-ezusbmidi         0x0003 0x0763   0x1010    0x0000       0x0000       0x00         0x00            0x00            0x00            0x00            0x00            0x00000000
+-ezusbmidi         0x0003 0x0763   0x1001    0x0000       0x0000       0x00         0x00            0x00            0x00            0x00            0x00            0x00000000
+-ezusbmidi         0x0003 0x0763   0x1020    0x0000       0x0000       0x00         0x00            0x00            0x00            0x00            0x00            0x00000000
+-ezusbmidi         0x0003 0x0763   0x1030    0x0000       0x0000       0x00         0x00            0x00            0x00            0x00            0x00            0x00000000
+diff -ruN ezusbmidi-2002_10_20-orig/Hotplug/Hotplugging ezusbmidi-2002_10_20/Hotplug/Hotplugging
+--- ezusbmidi-2002_10_20-orig/Hotplug/Hotplugging	2002-10-20 00:00:00.000000000 +0200
++++ ezusbmidi-2002_10_20/Hotplug/Hotplugging	1970-01-01 01:00:00.000000000 +0100
+@@ -1,37 +0,0 @@
+-1) Have hotplug <http://linux-hotplug.sourceforge.net> installed including the fxload program.
+-   (Debian users note that fxload is in a separate package hotplug-utils)
+-
+-2) Make and install the driver in /lib/modules/linux-.../misc
+-   This can be done either directly from the kernel > 2.5.40, or
+-   for 2.4.* from <http://member.nifty.ne.jp/Breeze/softwares/unix/usbmidi-e.html>
+-   
+-3) depmod -a
+-4) Check /lib/modules/linux-.../usbmap
+-
+-
+-=== The following steps are only needed for the midisport firmware ===
+-
+-
+-5) Add the following lines to /etc/hotplug/usb.usermap
+-   (or, if you're running Debian, into /etc/hotplug/usb.usermap.local and
+-    run update-usb.usermap. Verify that the lines ended in /etc/hotplug/usb.usermap)
+-----------------------------------------------------------------------------------------
+-# usb module         match_flags idVendor idProduct bcdDevice_lo bcdDevice_hi bDeviceClass bDeviceSubClass bDeviceProtocol bInterfaceClass bInterfaceSubClass bInterfaceProtocol driver_info
+-ezusbmidi         0x0003 0x0763   0x1010    0x0000       0x0000       0x00         0x00            0x00            0x00            0x00            0x00            0x00000000
+-ezusbmidi         0x0003 0x0763   0x1001    0x0000       0x0000       0x00         0x00            0x00            0x00            0x00            0x00            0x00000000
+-ezusbmidi         0x0003 0x0763   0x1020    0x0000       0x0000       0x00         0x00            0x00            0x00            0x00            0x00            0x00000000
+-ezusbmidi         0x0003 0x0763   0x1030    0x0000       0x0000       0x00         0x00            0x00            0x00            0x00            0x00            0x00000000
+-----------------------------------------------------------------------------------------
+-
+-6) copy the firmware file(s) into /etc/hotplug/usb/
+-7) add the following lines into a new file /etc/hotplug/usb/ezusbmidi
+-----------------------------------------------------------------------------------------
+-#!/bin/sh
+-
+-case "$PRODUCT" in
+-  763/1010/1) fxload -I /etc/hotplug/usb/ezusbmidi1x1.ihx ;; # Midisport1x1 pre-enumberation
+-  763/1001/1) fxload -I /etc/hotplug/usb/ezusbmidi2x2.ihx ;; # Midisport2x2 pre-enumberation
+-esac
+-----------------------------------------------------------------------------------------
+-
+-8) you're done, firmware and drivers will be loaded automatically.
+diff -ruN ezusbmidi-2002_10_20-orig/Makefile ezusbmidi-2002_10_20/Makefile
+--- ezusbmidi-2002_10_20-orig/Makefile	2002-10-22 00:00:00.000000000 +0200
++++ ezusbmidi-2002_10_20/Makefile	2006-03-19 01:51:53.000000000 +0100
+@@ -2,11 +2,11 @@
+ 
+ ezusbmidi1x1.ihx: ezusbmidi.c ezusb_reg.h bufsync.h
+ 	rm -rf sdcc; mkdir sdcc; cp $^ sdcc
+-	cd sdcc; sdcc -DCONFIG_MidiSport1x1 --stack-after-data $<; packihx ezusbmidi.ihx > ../$@
++	cd sdcc; sdcc -I. -DCONFIG_MidiSport1x1 $<; packihx ezusbmidi.ihx > ../$@
+ 
+ ezusbmidi2x2.ihx: ezusbmidi.c ezusb_reg.h bufsync.h
+ 	rm -rf sdcc; mkdir sdcc; cp $^ sdcc
+-	cd sdcc; sdcc -DCONFIG_MidiSport2x2 --stack-after-data $<; packihx ezusbmidi.ihx > ../$@
++	cd sdcc; sdcc -I. -DCONFIG_MidiSport2x2 $<; packihx ezusbmidi.ihx > ../$@
+ 
+ ezusbmidi.pdf: ezusbmidi.sgml descriptor.png
+ 	sgml2latex --output=pdf $<
+@@ -19,12 +19,11 @@
+ 	rm -f [1-9] *.pdf *.html
+ 
+ install:
+-	mkdir -p $(DESTDIR)/etc/hotplug/usb
++	mkdir -p $(DESTDIR)/etc/udev/rules.d
+ 	mkdir -p $(DESTDIR)/usr/share/usb/ezusbmidi
+-	install -m755 Hotplug/ezusbmidi $(DESTDIR)/etc/hotplug/usb
+-	install -m644 Hotplug/ezusbmidi.usermap $(DESTDIR)/etc/hotplug/usb
+ 	install -m644 ezusbmidi1x1.ihx $(DESTDIR)/usr/share/usb/ezusbmidi
+ 	install -m644 ezusbmidi2x2.ihx $(DESTDIR)/usr/share/usb/ezusbmidi
++	install -m644 70-ezusbmidi-firmware.rules $(DESTDIR)/etc/udev/rules.d
+ 
+ test:ezusbmidi.ihx
+ 	#echo -n $'\x90\x40\x7f' > /dev/midi2
