@@ -18,7 +18,7 @@ diff -ruN ezusbmidi-2002_10_20-orig/ezusbmidi.c ezusbmidi-2002_10_20/ezusbmidi.c
  struct MidiPipeLine
  {
    struct CYCSYN  inserCtl;        // UART->serial
--  byte*  xdata   inserBuf;
+-  byte*  __xdata   inserBuf;
 +  byte*          inserBuf;
  };
  
