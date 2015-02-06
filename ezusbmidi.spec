@@ -1,7 +1,7 @@
 Summary:	Firmware drivers for EZUSB MIDI devices
 Name:		ezusbmidi
 Version:	2002_10_20
-Release:	11
+Release:	12
 License:	GPLv2+
 Group:		System/Kernel and hardware
 Url:		http://linux-hotplug.sourceforge.net
