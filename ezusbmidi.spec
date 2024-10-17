@@ -4,7 +4,7 @@ Version:	2002_10_20
 Release:	12
 License:	GPLv2+
 Group:		System/Kernel and hardware
-Url:		http://linux-hotplug.sourceforge.net
+Url:		https://linux-hotplug.sourceforge.net
 Source0:	%{name}-%{version}.tar.bz2
 Patch0:		ezusbmidi-2002_10_20-sdcc33.patch
 Patch1:		ezusbmidi-2002_10_20-udev.patch
